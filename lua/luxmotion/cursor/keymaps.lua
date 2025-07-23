@@ -39,6 +39,23 @@ function M.setup_keymaps()
   vim.keymap.set("n", "l", function()
     M.smooth_move("l", vim.v.count1)
   end, { desc = "Smooth move right" })
+
+  -- Visual mode keymaps
+  vim.keymap.set("v", "j", function()
+    M.smooth_move("j", vim.v.count1)
+  end, { desc = "Smooth move down (visual)" })
+
+  vim.keymap.set("v", "k", function()
+    M.smooth_move("k", vim.v.count1)
+  end, { desc = "Smooth move up (visual)" })
+
+  vim.keymap.set("v", "h", function()
+    M.smooth_move("h", vim.v.count1)
+  end, { desc = "Smooth move left (visual)" })
+
+  vim.keymap.set("v", "l", function()
+    M.smooth_move("l", vim.v.count1)
+  end, { desc = "Smooth move right (visual)" })
 end
 
 return M
