@@ -23,9 +23,18 @@ function M.animate_cursor(start_line, end_line, start_col, end_col)
   state.set_cursor_animating(true)
   local start_time = vim.loop.hrtime()
   
+  local line_distance = math.abs(end_line - start_line)
+  local col_distance = math.abs(end_col - start_col)
+  
   local duration = cursor_config.duration
-  if start_line == end_line and start_col ~= end_col then
-    duration = math.floor(duration * 0.4)
+  
+  -- For single line or single column movements, use much shorter duration
+  if line_distance <= 1 and col_distance <= 1 then
+    duration = math.floor(duration * 0.2) -- 50ms for single movements
+  elseif line_distance <= 3 or col_distance <= 3 then
+    duration = math.floor(duration * 0.4) -- 100ms for short movements
+  elseif start_line == end_line and start_col ~= end_col then
+    duration = math.floor(duration * 0.6) -- Horizontal movements still faster
   end
   
   local duration_ns = duration * 1000000
