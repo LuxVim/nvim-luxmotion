@@ -1,24 +1,17 @@
 local cursor_animation = require("luxmotion.cursor.animation")
-local position_utils = require("luxmotion.utils.position")
+local window_utils = require("luxmotion.utils.window")
+local cursor_movement = require("luxmotion.cursor.movement")
 
 local M = {}
 
 function M.smooth_move(direction, count)
   count = count or 1
-  local current_pos = position_utils.get_cursor_position()
+  local current_pos = window_utils.get_cursor_position()
   local current_line = current_pos[1]
   local current_col = current_pos[2]
   
-  local target_line = current_line
-  local target_col = current_col
-  
-  if direction == "j" or direction == "k" then
-    local buf_info = position_utils.get_buffer_info()
-    target_line = position_utils.calculate_target_line(current_line, direction, count, buf_info.line_count)
-  elseif direction == "h" or direction == "l" or direction == "0" or direction == "$" then
-    local buf_info = position_utils.get_buffer_info()
-    target_col = position_utils.calculate_target_col(current_col, direction, count, #buf_info.current_line)
-  end
+  local target_line = cursor_movement.calculate_target_line(current_line, direction, count)
+  local target_col = cursor_movement.calculate_target_col(current_col, direction, count, current_line)
   
   cursor_animation.animate_cursor(current_line, target_line, current_col, target_col)
 end

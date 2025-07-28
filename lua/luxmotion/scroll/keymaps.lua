@@ -1,24 +1,17 @@
 local scroll_animation = require("luxmotion.scroll.animation")
-local position_utils = require("luxmotion.utils.position")
+local window_utils = require("luxmotion.utils.window")
+local scroll_movement = require("luxmotion.scroll.movement")
+local visual_utils = require("luxmotion.utils.visual")
 
 local M = {}
 
 function M.smooth_scroll(command, count)
   count = count or 1
-  local current_pos = position_utils.get_cursor_position()
+  local current_pos = window_utils.get_cursor_position()
   local current_line = current_pos[1]
   local current_col = current_pos[2]
   
-  local win_info = position_utils.get_window_info()
-  local buf_info = position_utils.get_buffer_info()
-  
-  local target_line = position_utils.calculate_scroll_target(
-    current_line, 
-    command, 
-    count, 
-    win_info.height, 
-    buf_info.line_count
-  )
+  local target_line = scroll_movement.calculate_scroll_target(current_line, command, count)
   
   scroll_animation.animate_scroll(current_line, target_line, current_col, current_col)
 end
@@ -26,57 +19,28 @@ end
 function M.visual_smooth_scroll(command, count)
   count = count or 1
   
-  local current_mode = vim.fn.mode()
-  local visual_start_pos = vim.fn.getpos("'<")
-  local visual_end_pos = vim.fn.getpos("'>")
-  
-  local current_pos = position_utils.get_cursor_position()
+  local selection = visual_utils.save_selection()
+  local current_pos = window_utils.get_cursor_position()
   local current_line = current_pos[1]
   local current_col = current_pos[2]
   
-  local win_info = position_utils.get_window_info()
-  local buf_info = position_utils.get_buffer_info()
+  local target_line = scroll_movement.calculate_scroll_target(current_line, command, count)
   
-  local target_line = position_utils.calculate_scroll_target(
-    current_line, 
-    command, 
-    count, 
-    win_info.height, 
-    buf_info.line_count
-  )
-  
-  vim.cmd('normal! \\<Esc>')
+  visual_utils.exit_visual_mode()
   
   local restore_visual = function()
-    vim.fn.setpos("'<", visual_start_pos)
-    vim.fn.setpos("'>", visual_end_pos)
-    vim.cmd('normal! gv')
+    visual_utils.restore_selection(selection)
   end
   
   scroll_animation.animate_scroll(current_line, target_line, current_col, current_col, restore_visual)
 end
 
 function M.smooth_position(command)
-  local current_pos = position_utils.get_cursor_position()
+  local current_pos = window_utils.get_cursor_position()
   local current_line = current_pos[1]
   local current_col = current_pos[2]
   
-  local win_info = position_utils.get_window_info()
-  local buf_info = position_utils.get_buffer_info()
-  
-  local target_line = current_line
-  
-  if command == "zz" then
-    target_line = current_line
-  elseif command == "zt" then
-    target_line = current_line
-  elseif command == "zb" then
-    target_line = current_line
-  elseif command == "gg" then
-    target_line = 1
-  elseif command == "G" then
-    target_line = buf_info.line_count
-  end
+  local target_line = scroll_movement.calculate_position_target(current_line, command)
   
   scroll_animation.animate_scroll(current_line, target_line, current_col, current_col)
 end

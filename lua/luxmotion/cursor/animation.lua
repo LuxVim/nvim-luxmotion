@@ -1,7 +1,9 @@
 local config = require("luxmotion.config")
 local state = require("luxmotion.core.state")
-local animator = require("luxmotion.core.animator")
 local math_utils = require("luxmotion.utils.math")
+local animation_utils = require("luxmotion.utils.animation")
+local window_utils = require("luxmotion.utils.window")
+local cursor_movement = require("luxmotion.cursor.movement")
 
 local M = {}
 
@@ -21,38 +23,32 @@ function M.animate_cursor(start_line, end_line, start_col, end_col)
   end
 
   state.set_cursor_animating(true)
-  local start_time = vim.loop.hrtime()
+  local start_time = animation_utils.get_current_time()
   
-  local line_distance = math.abs(end_line - start_line)
-  local col_distance = math.abs(end_col - start_col)
+  local duration = cursor_movement.calculate_movement_duration(
+    cursor_config.duration, 
+    start_line, 
+    end_line, 
+    start_col, 
+    end_col
+  )
   
-  local duration = cursor_config.duration
-  
-  -- For single line or single column movements, use much shorter duration
-  if line_distance <= 1 and col_distance <= 1 then
-    duration = math.floor(duration * 0.2) -- 50ms for single movements
-  elseif line_distance <= 3 or col_distance <= 3 then
-    duration = math.floor(duration * 0.4) -- 100ms for short movements
-  elseif start_line == end_line and start_col ~= end_col then
-    duration = math.floor(duration * 0.6) -- Horizontal movements still faster
-  end
-  
-  local duration_ns = duration * 1000000
+  local duration_ns = animation_utils.duration_to_nanoseconds(duration)
   local easing_fn = math_utils.get_easing_function(cursor_config.easing)
 
   local update_fn = function(eased_progress, raw_progress)
-    local current_line = math.floor(math_utils.lerp(start_line, end_line, eased_progress) + 0.5)
-    local current_col = math.floor(math_utils.lerp(start_col, end_col, eased_progress) + 0.5)
+    local current_line = animation_utils.interpolate_values(start_line, end_line, eased_progress)
+    local current_col = animation_utils.interpolate_values(start_col, end_col, eased_progress)
     
-    vim.api.nvim_win_set_cursor(0, {current_line, current_col})
+    window_utils.set_cursor_position(current_line, current_col)
   end
   
   local complete_fn = function()
     state.set_cursor_animating(false)
-    vim.api.nvim_win_set_cursor(0, {end_line, end_col})
+    window_utils.set_cursor_position(end_line, end_col)
   end
   
-  local animation_loop = animator.create_animation_loop(
+  local animation_loop = animation_utils.create_loop(
     start_time, 
     duration_ns, 
     easing_fn, 
