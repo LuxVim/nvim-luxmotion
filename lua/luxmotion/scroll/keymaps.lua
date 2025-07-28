@@ -23,6 +23,39 @@ function M.smooth_scroll(command, count)
   scroll_animation.animate_scroll(current_line, target_line, current_col, current_col)
 end
 
+function M.visual_smooth_scroll(command, count)
+  count = count or 1
+  
+  local current_mode = vim.fn.mode()
+  local visual_start_pos = vim.fn.getpos("'<")
+  local visual_end_pos = vim.fn.getpos("'>")
+  
+  local current_pos = position_utils.get_cursor_position()
+  local current_line = current_pos[1]
+  local current_col = current_pos[2]
+  
+  local win_info = position_utils.get_window_info()
+  local buf_info = position_utils.get_buffer_info()
+  
+  local target_line = position_utils.calculate_scroll_target(
+    current_line, 
+    command, 
+    count, 
+    win_info.height, 
+    buf_info.line_count
+  )
+  
+  vim.cmd('normal! \\<Esc>')
+  
+  local restore_visual = function()
+    vim.fn.setpos("'<", visual_start_pos)
+    vim.fn.setpos("'>", visual_end_pos)
+    vim.cmd('normal! gv')
+  end
+  
+  scroll_animation.animate_scroll(current_line, target_line, current_col, current_col, restore_visual)
+end
+
 function M.smooth_position(command)
   local current_pos = position_utils.get_cursor_position()
   local current_line = current_pos[1]
@@ -63,6 +96,22 @@ function M.setup_keymaps()
 
   vim.keymap.set("n", "<C-b>", function()
     M.smooth_scroll("ctrl_b", vim.v.count1)
+  end, { desc = "Smooth scroll up full-page" })
+
+  vim.keymap.set("v", "<C-d>", function()
+    M.visual_smooth_scroll("ctrl_d", vim.v.count1)
+  end, { desc = "Smooth scroll down half-page" })
+
+  vim.keymap.set("v", "<C-u>", function()
+    M.visual_smooth_scroll("ctrl_u", vim.v.count1)
+  end, { desc = "Smooth scroll up half-page" })
+
+  vim.keymap.set("v", "<C-f>", function()
+    M.visual_smooth_scroll("ctrl_f", vim.v.count1)
+  end, { desc = "Smooth scroll down full-page" })
+
+  vim.keymap.set("v", "<C-b>", function()
+    M.visual_smooth_scroll("ctrl_b", vim.v.count1)
   end, { desc = "Smooth scroll up full-page" })
 
   vim.keymap.set("n", "zz", function()

@@ -5,12 +5,13 @@ local math_utils = require("luxmotion.utils.math")
 
 local M = {}
 
-function M.animate_scroll(start_line, end_line, start_col, end_col)
+function M.animate_scroll(start_line, end_line, start_col, end_col, callback)
   local scroll_config = config.get_scroll()
   
   if not scroll_config.enabled then
     vim.cmd('normal! ' .. vim.fn.line('.') .. 'G')
     vim.api.nvim_win_set_cursor(0, {end_line, end_col})
+    if callback then callback() end
     return
   end
   
@@ -20,6 +21,7 @@ function M.animate_scroll(start_line, end_line, start_col, end_col)
 
   if start_line == end_line then
     vim.api.nvim_win_set_cursor(0, {end_line, end_col})
+    if callback then callback() end
     return
   end
 
@@ -56,6 +58,7 @@ function M.animate_scroll(start_line, end_line, start_col, end_col)
   local complete_fn = function()
     state.set_scroll_animating(false)
     vim.fn.winrestview({topline = end_topline, lnum = end_line, col = end_col, leftcol = 0})
+    if callback then callback() end
   end
   
   local animation_loop = animator.create_animation_loop(
