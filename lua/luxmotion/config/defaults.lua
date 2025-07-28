@@ -2,7 +2,7 @@ local M = {}
 
 M.config = {
   cursor = {
-    duration = 150,
+    duration = 250,
     easing = "ease-out",
     enabled = true,
   },

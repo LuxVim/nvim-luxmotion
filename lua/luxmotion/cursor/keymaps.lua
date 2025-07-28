@@ -15,7 +15,7 @@ function M.smooth_move(direction, count)
   if direction == "j" or direction == "k" then
     local buf_info = position_utils.get_buffer_info()
     target_line = position_utils.calculate_target_line(current_line, direction, count, buf_info.line_count)
-  elseif direction == "h" or direction == "l" then
+  elseif direction == "h" or direction == "l" or direction == "0" or direction == "$" then
     local buf_info = position_utils.get_buffer_info()
     target_col = position_utils.calculate_target_col(current_col, direction, count, #buf_info.current_line)
   end
@@ -56,6 +56,22 @@ function M.setup_keymaps()
   vim.keymap.set("v", "l", function()
     M.smooth_move("l", vim.v.count1)
   end, { desc = "Smooth move right (visual)" })
+
+  vim.keymap.set("n", "0", function()
+    M.smooth_move("0", 1)
+  end, { desc = "Smooth move to beginning of line" })
+
+  vim.keymap.set("n", "$", function()
+    M.smooth_move("$", 1)
+  end, { desc = "Smooth move to end of line" })
+
+  vim.keymap.set("v", "0", function()
+    M.smooth_move("0", 1)
+  end, { desc = "Smooth move to beginning of line (visual)" })
+
+  vim.keymap.set("v", "$", function()
+    M.smooth_move("$", 1)
+  end, { desc = "Smooth move to end of line (visual)" })
 end
 
 return M

@@ -33,6 +33,10 @@ function M.calculate_target_col(current_col, direction, count, line_length)
     return math.max(current_col - count, 0)
   elseif direction == "l" then
     return math.min(current_col + count, line_length or 0)
+  elseif direction == "0" then
+    return 0
+  elseif direction == "$" then
+    return math.max((line_length or 0) - 1, 0)
   else
     return current_col
   end
