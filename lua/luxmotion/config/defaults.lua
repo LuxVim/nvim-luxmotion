@@ -7,7 +7,7 @@ M.config = {
     enabled = true,
   },
   scroll = {
-    duration = 200,
+    duration = 400,
     easing = "ease-out",
     enabled = true,
   },

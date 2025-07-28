@@ -6,10 +6,13 @@ A comprehensive Neovim plugin that provides smooth cursor navigation and viewpor
 
 ### Cursor Movement
 - Smooth animated cursor movement for `j`, `k`, `h`, `l` keys
+- Additional movements: `0` (beginning of line), `$` (end of line)
 - Support for count prefixes (e.g., `5j` moves 5 lines smoothly)
+- Visual mode support for all cursor movements
 
 ### Viewport Scrolling  
 - Smooth scrolling for `<C-d>`, `<C-u>`, `<C-f>`, `<C-b>` commands
+- Visual mode support for scroll commands with selection preservation
 - Smooth positioning with `zz`, `zt`, `zb` commands
 - Optional experimental `gg`, `G` smooth jumping
 
@@ -28,12 +31,12 @@ A comprehensive Neovim plugin that provides smooth cursor navigation and viewpor
   config = function()
     require("luxmotion").setup({
       cursor = {
-        duration = 150,     -- Cursor animation duration in milliseconds
+        duration = 250,     -- Cursor animation duration in milliseconds
         easing = "ease-out", -- Cursor easing function
         enabled = true,     -- Enable cursor animations
       },
       scroll = {
-        duration = 200,     -- Scroll animation duration in milliseconds
+        duration = 400,     -- Scroll animation duration in milliseconds
         easing = "ease-out", -- Scroll easing function
         enabled = true,     -- Enable scroll animations
       },
@@ -67,12 +70,12 @@ Then in your `init.lua` or `init.vim`:
 lua << EOF
 require("luxmotion").setup({
   cursor = {
-    duration = 150,
+    duration = 250,
     easing = "ease-out",
     enabled = true,
   },
   scroll = {
-    duration = 200,
+    duration = 400,
     easing = "ease-out",
     enabled = true,
   },
@@ -90,12 +93,12 @@ EOF
 ```lua
 require("luxmotion").setup({
   cursor = {
-    duration = 150,       -- Animation duration for cursor movement (default: 150)
+    duration = 250,       -- Animation duration for cursor movement (default: 250)
     easing = "ease-out",  -- Easing function for cursor (default: "ease-out")
     enabled = true,       -- Enable cursor animations (default: true)
   },
   scroll = {
-    duration = 200,       -- Animation duration for scrolling (default: 200)
+    duration = 400,       -- Animation duration for scrolling (default: 400)
     easing = "ease-out",  -- Easing function for scrolling (default: "ease-out")
     enabled = true,       -- Enable scroll animations (default: true)
   },
@@ -111,7 +114,10 @@ require("luxmotion").setup({
 
 **Cursor Movement (when `keymaps.cursor = true`):**
 - `h`, `j`, `k`, `l` - Smooth cursor movement
+- `0` - Smooth move to beginning of line
+- `$` - Smooth move to end of line
 - Works with count prefixes: `5j`, `10k`, etc.
+- Available in both normal and visual modes
 
 **Viewport Scrolling (when `keymaps.scroll = true`):**
 - `<C-d>` - Scroll down half-page
@@ -121,6 +127,7 @@ require("luxmotion").setup({
 - `zz` - Center cursor in window
 - `zt` - Move cursor to top of window
 - `zb` - Move cursor to bottom of window
+- Scroll commands work in visual mode with selection preservation
 
 **Experimental (when `keymaps.experimental = true`):**
 - `gg` - Smooth jump to beginning of file
@@ -195,7 +202,7 @@ require("luxmotion").setup({
     easing = "linear",   -- Linear cursor movement
   },
   scroll = {
-    duration = 300,      -- Slower, more dramatic scrolling
+    duration = 500,      -- Slower, more dramatic scrolling
     easing = "ease-out", -- Smooth scroll with ease-out
   },
 })
