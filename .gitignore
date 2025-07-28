@@ -1,0 +1,31 @@
+# Ignore CLAUDE.md
+CLAUDE.md
+
+# Neovim plugin artifacts
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Lua bytecode
+*.luac
+
+# IDE/Editor files
+.vscode/
+.idea/
+*.sublime-*
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
