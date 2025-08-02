@@ -26,9 +26,8 @@ function M.visual_smooth_scroll(command, count)
   
   local target_line = scroll_movement.calculate_scroll_target(current_line, command, count)
   
-  visual_utils.exit_visual_mode()
-  
   local restore_visual = function()
+    visual_utils.exit_visual_mode()
     visual_utils.restore_selection(selection)
   end
   
