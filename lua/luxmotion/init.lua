@@ -9,6 +9,10 @@ function M.setup(user_config)
   config.validate(user_config)
   config.update(user_config)
   
+  -- Initialize performance monitoring
+  local performance = require("luxmotion.performance")
+  performance.setup()
+  
   local keymap_config = config.get_keymaps()
   
   if keymap_config.cursor then
@@ -74,6 +78,15 @@ end
 
 function M.scroll_smooth(command, count)
   scroll_keymaps.smooth_scroll(command, count)
+end
+
+function M.toggle_performance()
+  local performance = require("luxmotion.performance")
+  if performance.is_active() then
+    performance.disable()
+  else
+    performance.enable()
+  end
 end
 
 return M

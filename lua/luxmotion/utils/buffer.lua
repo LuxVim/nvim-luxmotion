@@ -8,7 +8,9 @@ function M.get_info()
 end
 
 function M.get_line_count()
-  return vim.api.nvim_buf_line_count(0)
+  -- Use cached value from window utils to reduce API calls
+  local window_utils = require("luxmotion.utils.window")
+  return window_utils.get_cached_buf_line_count()
 end
 
 function M.get_current_line()

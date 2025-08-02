@@ -1,15 +1,10 @@
-local scroll_keymaps = require("luxmotion.scroll.keymaps")
+-- Experimental keymaps are now moved to main cursor keymaps
+-- This module is deprecated - gg and G are now handled by cursor/keymaps.lua
 
 local M = {}
 
 function M.setup_keymaps()
-  vim.keymap.set("n", "gg", function()
-    scroll_keymaps.smooth_position("gg")
-  end, { desc = "Smooth goto first line" })
-
-  vim.keymap.set("n", "G", function()
-    scroll_keymaps.smooth_position("G")
-  end, { desc = "Smooth goto last line" })
+  -- No longer needed - movements are in cursor/keymaps.lua
 end
 
 return M
