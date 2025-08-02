@@ -12,6 +12,10 @@ command! LuxMotionDisableCursor lua require('luxmotion').disable_cursor()
 command! LuxMotionEnableScroll lua require('luxmotion').enable_scroll()
 command! LuxMotionDisableScroll lua require('luxmotion').disable_scroll()
 
+command! LuxMotionPerformanceEnable lua require('luxmotion.performance').enable()
+command! LuxMotionPerformanceDisable lua require('luxmotion.performance').disable()
+command! LuxMotionPerformanceToggle lua require('luxmotion').toggle_performance()
+
 if !exists('g:luxmotion_auto_setup')
   let g:luxmotion_auto_setup = 1
 endif

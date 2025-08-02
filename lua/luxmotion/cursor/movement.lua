@@ -1,9 +1,9 @@
-local buffer_utils = require("luxmotion.utils.buffer")
+local viewport = require("luxmotion.core.viewport")
 
 local M = {}
 
 function M.calculate_target_line(current_line, direction, count)
-  local buf_line_count = buffer_utils.get_line_count()
+  local buf_line_count = viewport.get_line_count()
   
   if direction == "j" then
     return math.min(current_line + count, buf_line_count)
@@ -16,7 +16,7 @@ end
 
 function M.calculate_target_col(current_col, direction, count, line_num)
   line_num = line_num or vim.fn.line('.')
-  local line_length = buffer_utils.get_line_length(line_num)
+  local line_length = viewport.get_line_length(line_num)
   
   if direction == "h" then
     return math.max(current_col - count, 0)
@@ -29,6 +29,112 @@ function M.calculate_target_col(current_col, direction, count, line_num)
   else
     return current_col
   end
+end
+
+-- Generic movement target calculator using vim motions
+function M.calculate_movement_target(movement_cmd, count)
+  count = count or 1
+  local current_pos = vim.api.nvim_win_get_cursor(0)
+  local current_line = current_pos[1]
+  local current_col = current_pos[2]
+  
+  -- Save cursor position
+  vim.api.nvim_win_set_cursor(0, current_pos)
+  
+  -- Execute movement command to get target position
+  local cmd = count .. movement_cmd
+  local success, _ = pcall(vim.cmd, "normal! " .. cmd)
+  
+  if not success then
+    -- Restore original position on error
+    vim.api.nvim_win_set_cursor(0, current_pos)
+    return current_line, current_col
+  end
+  
+  local target_pos = vim.api.nvim_win_get_cursor(0)
+  local target_line = target_pos[1]
+  local target_col = target_pos[2]
+  
+  -- Restore original cursor position
+  vim.api.nvim_win_set_cursor(0, current_pos)
+  
+  return target_line, target_col
+end
+
+function M.calculate_word_target(direction, count)
+  local movement_map = {
+    w = "w", b = "b", e = "e",
+    W = "W", B = "B", E = "E"
+  }
+  
+  local movement_cmd = movement_map[direction]
+  if not movement_cmd then
+    local current_pos = vim.api.nvim_win_get_cursor(0)
+    return current_pos[1], current_pos[2]
+  end
+  
+  return M.calculate_movement_target(movement_cmd, count)
+end
+
+function M.calculate_find_target(direction, char, count)
+  count = count or 1
+  local movement_map = {
+    f = "f" .. char,
+    F = "F" .. char, 
+    t = "t" .. char,
+    T = "T" .. char
+  }
+  
+  local movement_cmd = movement_map[direction]
+  if not movement_cmd then
+    local current_pos = vim.api.nvim_win_get_cursor(0)
+    return current_pos[1], current_pos[2]
+  end
+  
+  return M.calculate_movement_target(movement_cmd, count)
+end
+
+function M.calculate_text_object_target(direction, count)
+  local movement_map = {
+    ["}"] = "}",
+    ["{"] = "{",
+    [")"] = ")",
+    ["("] = "(",
+    ["%"] = "%"
+  }
+  
+  local movement_cmd = movement_map[direction]
+  if not movement_cmd then
+    local current_pos = vim.api.nvim_win_get_cursor(0)
+    return current_pos[1], current_pos[2]
+  end
+  
+  return M.calculate_movement_target(movement_cmd, count)
+end
+
+function M.calculate_line_target(direction, count)
+  if direction == "gg" then
+    local line_num = count or 1
+    return line_num, 0
+  elseif direction == "G" then
+    local line_num = count or viewport.get_line_count()
+    return line_num, 0
+  elseif direction == "|" then
+    local current_pos = vim.api.nvim_win_get_cursor(0)
+    local col_num = math.max((count or 1) - 1, 0)
+    return current_pos[1], col_num
+  end
+  
+  local current_pos = vim.api.nvim_win_get_cursor(0)
+  return current_pos[1], current_pos[2]
+end
+
+function M.calculate_search_target(direction, count)
+  return M.calculate_movement_target(direction, count)
+end
+
+function M.calculate_screen_line_target(direction, count)
+  return M.calculate_movement_target(direction, count)
 end
 
 function M.calculate_movement_duration(base_duration, start_line, end_line, start_col, end_col)

@@ -1,5 +1,5 @@
 local scroll_animation = require("luxmotion.scroll.animation")
-local window_utils = require("luxmotion.utils.window")
+local viewport = require("luxmotion.core.viewport")
 local scroll_movement = require("luxmotion.scroll.movement")
 local visual_utils = require("luxmotion.utils.visual")
 
@@ -7,7 +7,7 @@ local M = {}
 
 function M.smooth_scroll(command, count)
   count = count or 1
-  local current_pos = window_utils.get_cursor_position()
+  local current_pos = viewport.get_cursor_position()
   local current_line = current_pos[1]
   local current_col = current_pos[2]
   
@@ -20,7 +20,7 @@ function M.visual_smooth_scroll(command, count)
   count = count or 1
   
   local selection = visual_utils.save_selection()
-  local current_pos = window_utils.get_cursor_position()
+  local current_pos = viewport.get_cursor_position()
   local current_line = current_pos[1]
   local current_col = current_pos[2]
   
@@ -36,7 +36,7 @@ function M.visual_smooth_scroll(command, count)
 end
 
 function M.smooth_position(command)
-  local current_pos = window_utils.get_cursor_position()
+  local current_pos = viewport.get_cursor_position()
   local current_line = current_pos[1]
   local current_col = current_pos[2]
   
