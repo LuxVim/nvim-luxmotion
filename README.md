@@ -1,4 +1,9 @@
-# nvim-luxmotion
+<h1 align="left">
+  <img src="https://github.com/user-attachments/assets/546ee0e5-30fd-4e37-b219-e390be8b1c6e"
+       alt="LuxVim Logo"
+       style="width: 40px; height: 40px; position: relative; top: 6px; margin-right: 10px;" />
+  nvim-luxmotion
+</h1>
 
 A comprehensive **Neovim smooth motion plugin**, providing **fluid animations for all motion commands**.  
 Combines smooth **cursor movement**, **word navigation**, **text objects**, and **viewport scrolling** into one seamless experience.
