@@ -115,10 +115,23 @@ end
 function M.calculate_line_target(direction, count)
   if direction == "gg" then
     local line_num = count or 1
-    return line_num, 0
+    -- Get first non-blank character position
+    local line_content = vim.api.nvim_buf_get_lines(0, line_num - 1, line_num, false)[1] or ""
+    local first_non_blank = line_content:match("^%s*"):len()
+    return line_num, first_non_blank
   elseif direction == "G" then
-    local line_num = count or viewport.get_line_count()
-    return line_num, 0
+    -- For G without explicit count (vim.v.count == 0), go to last line
+    -- For G with explicit count (vim.v.count > 0), go to that line
+    local line_num
+    if vim.v.count == 0 then
+      line_num = viewport.get_line_count()
+    else
+      line_num = count
+    end
+    -- Get first non-blank character position for the target line
+    local line_content = vim.api.nvim_buf_get_lines(0, line_num - 1, line_num, false)[1] or ""
+    local first_non_blank = line_content:match("^%s*"):len()
+    return line_num, first_non_blank
   elseif direction == "|" then
     local current_pos = vim.api.nvim_win_get_cursor(0)
     local col_num = math.max((count or 1) - 1, 0)
