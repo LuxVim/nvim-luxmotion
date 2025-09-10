@@ -53,7 +53,10 @@ function M.get_cursor_position()
 end
 
 function M.set_cursor_position(line, col)
-  vim.api.nvim_win_set_cursor(0, {line, col})
+  -- Validate and clamp cursor position to prevent out of bounds errors
+  local clamped_line = M.clamp_line(line)
+  local clamped_col = M.clamp_column(col, clamped_line)
+  vim.api.nvim_win_set_cursor(0, {clamped_line, clamped_col})
 end
 
 function M.get_scrolloff()
