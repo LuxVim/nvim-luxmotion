@@ -15,6 +15,7 @@ function M.setup(user_config)
     M.reset()
   end
 
+  config.reset()
   config.validate(user_config)
   config.update(user_config)
 

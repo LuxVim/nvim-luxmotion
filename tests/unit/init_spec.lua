@@ -197,6 +197,17 @@ describe('init (main module)', function()
     end)
   end)
 
+  it('setup starts from pristine defaults on each call', function()
+    local config = require('whisk.config')
+
+    whisk.setup({ cursor = { duration = 500 } })
+    assert.equals(config.get_cursor().duration, 500)
+
+    whisk.setup({ scroll = { duration = 100 } })
+    assert.equals(config.get_cursor().duration, 150)
+    assert.equals(config.get_scroll().duration, 100)
+  end)
+
   it('setup registers traits', function()
     whisk.setup()
     local traits = require('whisk.registry.traits')
