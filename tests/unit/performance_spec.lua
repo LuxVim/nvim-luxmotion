@@ -182,4 +182,19 @@ describe('performance', function()
       assert.is_type(fps, 'number')
     end
   end)
+
+  it('skips frame samples when the idle gap exceeds 5x the frame interval', function()
+    local now = 0
+    _G.vim.loop = { hrtime = function() return now end }
+
+    for _ = 1, 12 do
+      now = now + 16 * 1000000
+      performance.record_frame_time()
+    end
+    assert.equals(performance.get_current_fps(), 62.5)
+
+    now = now + 300 * 1000000
+    performance.record_frame_time()
+    assert.equals(performance.get_current_fps(), 62.5)
+  end)
 end)
