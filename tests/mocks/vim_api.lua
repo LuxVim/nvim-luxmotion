@@ -12,6 +12,7 @@ local state = {
   window_buffers = {},
   augroups = {},
   augroup_id = 0,
+  fed_keys = {},
 }
 
 function M.reset()
@@ -27,6 +28,7 @@ function M.reset()
     window_buffers = {},
     augroups = {},
     augroup_id = 0,
+    fed_keys = {},
   }
 end
 
@@ -169,6 +171,14 @@ function M.create()
           table.remove(state.autocmds, i)
         end
       end
+    end,
+
+    nvim_replace_termcodes = function(str, from_part, do_lt, special)
+      return str
+    end,
+
+    nvim_feedkeys = function(keys, mode, escape_ks)
+      table.insert(state.fed_keys, { keys = keys, mode = mode })
     end,
   }
 end

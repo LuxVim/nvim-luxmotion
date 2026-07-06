@@ -100,18 +100,30 @@ describe('engine/orchestrator', function()
     local config = require('whisk.config')
     config.update({ cursor = { enabled = false } })
 
-    orchestrator.execute('test_j', { count = 1 })
+    orchestrator.execute('test_j', { count = 1, direction = 'j' })
 
-    local commands = mocks.get_commands()
-    assert.greater_than(#commands, 0)
+    local fed = mocks.get_api_state().fed_keys
+    assert.greater_than(#fed, 0)
   end)
 
-  it('fallback executes normal command', function()
+  it('fallback feeds keys via feedkeys', function()
     local motion = motions.get('test_j')
-    orchestrator.fallback(motion, { count = 3 })
+    orchestrator.fallback(motion, { count = 3, direction = 'j' })
+
+    local fed = mocks.get_api_state().fed_keys
+    assert.greater_than(#fed, 0)
+  end)
+
+  it('fallback resolves control-key termcodes via feedkeys, not vim.cmd', function()
+    orchestrator.fallback({ keys = { '<C-d>' } }, { count = 1, direction = '<C-d>' })
+
+    local fed = mocks.get_api_state().fed_keys
+    assert.equals(#fed, 1)
+    assert.equals(fed[1].keys, '<C-d>')
+    assert.equals(fed[1].mode, 'nx')
 
     local commands = mocks.get_commands()
-    assert.greater_than(#commands, 0)
+    assert.equals(#commands, 0)
   end)
 
   it('execute handles unknown motion gracefully', function()

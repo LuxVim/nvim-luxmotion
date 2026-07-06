@@ -84,7 +84,8 @@ function M.fallback(motion, input)
   if input.char then
     cmd = cmd .. input.char
   end
-  vim.cmd("normal! " .. cmd)
+  local keys = vim.api.nvim_replace_termcodes(cmd, true, false, true)
+  vim.api.nvim_feedkeys(keys, "nx", false)
 end
 
 return M
