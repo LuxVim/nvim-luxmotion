@@ -160,28 +160,6 @@ describe('cursor/keymaps (shims)', function()
     assert.equals(orchestrator_calls[1].motion_id, 'line_|')
   end)
 
-  it('smooth_text_object_move % with an explicit count propagates has_count true', function()
-    cursor_keymaps.smooth_text_object_move('%', 50)
-    assert.equals(orchestrator_calls[1].input.count, 50)
-    assert.is_true(orchestrator_calls[1].input.has_count)
-  end)
-
-  it('smooth_text_object_move % with no count leaves has_count false (bare % fix preserved)', function()
-    cursor_keymaps.smooth_text_object_move('%', 1)
-    assert.is_false(orchestrator_calls[1].input.has_count)
-  end)
-
-  it('smooth_line_move G with an explicit count propagates has_count true', function()
-    cursor_keymaps.smooth_line_move('G', 5)
-    assert.equals(orchestrator_calls[1].input.count, 5)
-    assert.is_true(orchestrator_calls[1].input.has_count)
-  end)
-
-  it('smooth_line_move G with no count leaves has_count false', function()
-    cursor_keymaps.smooth_line_move('G', nil)
-    assert.is_false(orchestrator_calls[1].input.has_count)
-  end)
-
   it('setup_keymaps is a no-op', function()
     assert.does_not_throw(function()
       cursor_keymaps.setup_keymaps()

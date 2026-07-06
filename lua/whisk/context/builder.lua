@@ -2,6 +2,13 @@ local Context = require('whisk.context.Context')
 
 local M = {}
 
+local function resolve_has_count(input)
+  if input.has_count ~= nil then
+    return input.has_count
+  end
+  return (input.count or 0) > 1
+end
+
 function M.build(input)
   local ctx = Context.new()
 
@@ -9,7 +16,7 @@ function M.build(input)
     char = input.char,
     count = input.count or 1,
     direction = input.direction,
-    has_count = input.has_count or false,
+    has_count = resolve_has_count(input),
   }
 
   ctx.cursor = {
