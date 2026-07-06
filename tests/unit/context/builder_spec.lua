@@ -64,6 +64,16 @@ describe('context/builder', function()
     assert.equals(ctx.input.count, 1)
   end)
 
+  it('build defaults has_count to false', function()
+    local ctx = builder.build({})
+    assert.is_false(ctx.input.has_count)
+  end)
+
+  it('build copies has_count from input', function()
+    local ctx = builder.build({ has_count = true })
+    assert.is_true(ctx.input.has_count)
+  end)
+
   it('build returns context with cursor position', function()
     local ctx = builder.build({})
     assert.is_not_nil(ctx.cursor)

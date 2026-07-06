@@ -12,6 +12,7 @@ function M.create_handler(motion)
         char = char,
         count = vim.v.count1,
         direction = motion.keys[1],
+        has_count = vim.v.count > 0,
       })
     end
   else
@@ -19,6 +20,7 @@ function M.create_handler(motion)
       orchestrator.execute(motion.id, {
         count = vim.v.count1,
         direction = motion.keys[1],
+        has_count = vim.v.count > 0,
       })
     end
   end

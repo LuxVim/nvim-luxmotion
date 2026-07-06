@@ -9,6 +9,7 @@ function M.build(input)
     char = input.char,
     count = input.count or 1,
     direction = input.direction,
+    has_count = input.has_count or false,
   }
 
   ctx.cursor = {
