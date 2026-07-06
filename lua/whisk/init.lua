@@ -34,6 +34,8 @@ function M.reset()
   traits.clear()
   motions.clear()
   lifecycle.teardown()
+  local performance = require("whisk.performance")
+  performance.teardown()
   initialized = false
 end
 

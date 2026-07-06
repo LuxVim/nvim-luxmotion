@@ -10,6 +10,8 @@ local performance_state = {
   event_listeners = {},
 }
 
+local autocmd_group = nil
+
 -- Check if performance mode should be auto-enabled
 function M.should_auto_enable()
   local perf_config = config.get_performance()
@@ -133,17 +135,27 @@ end
 -- Initialize performance monitoring
 function M.setup()
   local perf_config = config.get_performance()
-  
+
   if perf_config.enabled then
     M.enable()
   end
-  
-  -- Set up auto-commands for performance monitoring
-  vim.api.nvim_create_autocmd({'BufEnter', 'BufWinEnter'}, {
+
+  autocmd_group = vim.api.nvim_create_augroup("WhiskPerformance", { clear = true })
+
+  vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
+    group = autocmd_group,
     callback = function()
       M.auto_toggle()
     end,
   })
+end
+
+function M.teardown()
+  M.disable()
+  if autocmd_group then
+    vim.api.nvim_del_augroup_by_id(autocmd_group)
+    autocmd_group = nil
+  end
 end
 
 return M
