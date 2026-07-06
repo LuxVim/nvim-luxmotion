@@ -189,6 +189,28 @@ describe('engine/orchestrator', function()
     assert.is_true(traits.is_animating('cursor'))
   end)
 
+  it('clears the animating flag when the animation is cancelled for a buffer', function()
+    local config = require('whisk.config')
+    config.update({ cursor = { enabled = true } })
+
+    orchestrator.execute('test_j', { count = 1 })
+    assert.is_true(traits.is_animating('cursor'))
+
+    loop.cancel_for_buffer(1)
+    assert.is_false(traits.is_animating('cursor'))
+  end)
+
+  it('clears the animating flag when the animation is cancelled for a window', function()
+    local config = require('whisk.config')
+    config.update({ cursor = { enabled = true } })
+
+    orchestrator.execute('test_j', { count = 1 })
+    assert.is_true(traits.is_animating('cursor'))
+
+    loop.cancel_for_window(1000)
+    assert.is_false(traits.is_animating('cursor'))
+  end)
+
   it('execute completes previous animation before starting new one (key repeat)', function()
     local config = require('whisk.config')
     config.update({ cursor = { enabled = true } })
