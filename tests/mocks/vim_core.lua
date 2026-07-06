@@ -168,6 +168,7 @@ M.loop = {
 
 M.options = {
   scrolloff = 5,
+  startofline = false,
 }
 
 M.buffer_options = {
