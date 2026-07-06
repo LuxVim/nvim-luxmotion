@@ -104,6 +104,7 @@ describe('engine/orchestrator', function()
 
     local fed = mocks.get_api_state().fed_keys
     assert.greater_than(#fed, 0)
+    assert.equals(fed[1].keys, 'j')
   end)
 
   it('fallback feeds keys via feedkeys', function()
@@ -112,6 +113,8 @@ describe('engine/orchestrator', function()
 
     local fed = mocks.get_api_state().fed_keys
     assert.greater_than(#fed, 0)
+    assert.equals(fed[1].keys, '3j')
+    assert.equals(fed[1].mode, 'nx')
   end)
 
   it('fallback resolves control-key termcodes via feedkeys, not vim.cmd', function()
