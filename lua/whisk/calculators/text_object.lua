@@ -1,10 +1,9 @@
 local M = {}
 
-local function calculate_via_native(motion_cmd, context)
+local function calculate_via_native(cmd, context)
   local original = { context.cursor.line, context.cursor.col }
   vim.api.nvim_win_set_cursor(0, original)
 
-  local cmd = context.input.count .. motion_cmd
   local success = pcall(vim.cmd, "normal! " .. cmd)
 
   if not success then
@@ -23,23 +22,27 @@ local function calculate_via_native(motion_cmd, context)
 end
 
 M["{"] = function(context)
-  return calculate_via_native("{", context)
+  return calculate_via_native(context.input.count .. "{", context)
 end
 
 M["}"] = function(context)
-  return calculate_via_native("}", context)
+  return calculate_via_native(context.input.count .. "}", context)
 end
 
 M["("] = function(context)
-  return calculate_via_native("(", context)
+  return calculate_via_native(context.input.count .. "(", context)
 end
 
 M[")"] = function(context)
-  return calculate_via_native(")", context)
+  return calculate_via_native(context.input.count .. ")", context)
 end
 
 M["%"] = function(context)
-  return calculate_via_native("%", context)
+  local cmd = "%"
+  if context.input.has_count then
+    cmd = context.input.count .. "%"
+  end
+  return calculate_via_native(cmd, context)
 end
 
 return M
