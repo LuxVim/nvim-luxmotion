@@ -43,9 +43,12 @@ The plugin auto-calls `require("whisk").setup()` on load. To disable this and ca
 {
   "josstei/whisk.nvim",
   event = "VeryLazy",
+  init = function() vim.g.whisk_auto_setup = 0 end,
   opts = {},
 }
 ```
+
+The `init` hook disables the plugin's built-in auto-setup so that lazy.nvim's `opts` is the single source of `setup()`; without it, whisk is configured twice at startup (once on load, once by lazy), leaking a duplicate performance autocmd.
 
 ### vim-plug
 

@@ -15,6 +15,7 @@ function M.setup(user_config)
     M.reset()
   end
 
+  config.reset()
   config.validate(user_config)
   config.update(user_config)
 
@@ -34,6 +35,8 @@ function M.reset()
   traits.clear()
   motions.clear()
   lifecycle.teardown()
+  local performance = require("whisk.performance")
+  performance.teardown()
   initialized = false
 end
 

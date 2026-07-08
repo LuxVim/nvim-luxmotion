@@ -156,6 +156,39 @@ describe('calculators/text_object', function()
     end)
   end)
 
+  it('% with no explicit count runs a bare % (issue #14)', function()
+    local ctx = {
+      cursor = { line = 5, col = 0 },
+      input = { count = 1, has_count = false },
+      buffer = { line_count = 10 },
+    }
+    text_object['%'](ctx)
+    local commands = mocks.get_commands()
+    assert.contains(commands, 'normal! %')
+  end)
+
+  it('% with an explicit count runs {count}%', function()
+    local ctx = {
+      cursor = { line = 5, col = 0 },
+      input = { count = 3, has_count = true },
+      buffer = { line_count = 10 },
+    }
+    text_object['%'](ctx)
+    local commands = mocks.get_commands()
+    assert.contains(commands, 'normal! 3%')
+  end)
+
+  it('} still prepends the count (regression)', function()
+    local ctx = {
+      cursor = { line = 3, col = 0 },
+      input = { count = 2, has_count = true },
+      buffer = { line_count = 9 },
+    }
+    text_object['}'](ctx)
+    local commands = mocks.get_commands()
+    assert.contains(commands, 'normal! 2}')
+  end)
+
   it('text object motions preserve column appropriately', function()
     local ctx = {
       cursor = { line = 3, col = 5 },

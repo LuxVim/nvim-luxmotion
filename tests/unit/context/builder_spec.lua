@@ -64,6 +64,32 @@ describe('context/builder', function()
     assert.equals(ctx.input.count, 1)
   end)
 
+  it('build defaults has_count to false', function()
+    local ctx = builder.build({})
+    assert.is_false(ctx.input.has_count)
+  end)
+
+  it('build copies has_count from input', function()
+    local ctx = builder.build({ has_count = true })
+    assert.is_true(ctx.input.has_count)
+  end)
+
+  it('build infers has_count when count > 1 and has_count is absent', function()
+    local ctx = builder.build({ count = 5, direction = 'G' })
+    assert.is_true(ctx.input.has_count)
+    assert.equals(ctx.input.count, 5)
+  end)
+
+  it('build leaves has_count false when count is 1 and has_count is absent', function()
+    local ctx = builder.build({ count = 1, direction = '%' })
+    assert.is_false(ctx.input.has_count)
+  end)
+
+  it('build preserves an explicit has_count false even when count > 1', function()
+    local ctx = builder.build({ count = 50, has_count = false })
+    assert.is_false(ctx.input.has_count)
+  end)
+
   it('build returns context with cursor position', function()
     local ctx = builder.build({})
     assert.is_not_nil(ctx.cursor)

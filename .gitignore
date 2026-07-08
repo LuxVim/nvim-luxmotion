@@ -32,3 +32,6 @@ Thumbs.db
 
 # Git worktrees
 .worktrees/
+
+# Superpowers planning artifacts (local workflow, not shipped)
+docs/superpowers/

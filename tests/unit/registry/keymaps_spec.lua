@@ -198,6 +198,46 @@ describe('registry/keymaps', function()
     end)
   end)
 
+  it('create_handler sets has_count false when no explicit count was typed', function()
+    local orchestrator = require('whisk.engine.orchestrator')
+    local captured
+    orchestrator.execute = function(_, input) captured = input end
+
+    local motion = {
+      id = 'test_no_count',
+      keys = { 'j' },
+      modes = { 'n' },
+      traits = { 'cursor' },
+      category = 'cursor',
+      calculator = function() return {} end,
+    }
+
+    _G.vim.v.count = 0
+    keymaps.create_handler(motion)()
+    assert.is_false(captured.has_count)
+  end)
+
+  it('create_handler sets has_count true when an explicit count was typed', function()
+    local orchestrator = require('whisk.engine.orchestrator')
+    local captured
+    orchestrator.execute = function(_, input) captured = input end
+
+    local motion = {
+      id = 'test_with_count',
+      keys = { 'j' },
+      modes = { 'n' },
+      traits = { 'cursor' },
+      category = 'cursor',
+      calculator = function() return {} end,
+    }
+
+    _G.vim.v.count = 3
+    keymaps.create_handler(motion)()
+    assert.is_true(captured.has_count)
+
+    _G.vim.v.count = 0
+  end)
+
   it('setup sets keymap options with desc', function()
     config.update({ keymaps = { cursor = true } })
 

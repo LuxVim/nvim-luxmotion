@@ -58,17 +58,20 @@ function M.execute(motion_id, input)
     traits.set_animating(trait_id, true)
   end
 
+  local function clear_animating()
+    for _, trait_id in ipairs(motion.traits) do
+      traits.set_animating(trait_id, false)
+    end
+  end
+
   loop.start({
     context = context,
     result = result,
     traits = motion.traits,
     duration = category_config.duration,
     easing = category_config.easing,
-    on_complete = function()
-      for _, trait_id in ipairs(motion.traits) do
-        traits.set_animating(trait_id, false)
-      end
-    end,
+    on_complete = clear_animating,
+    on_cancel = clear_animating,
   })
 end
 
@@ -81,7 +84,8 @@ function M.fallback(motion, input)
   if input.char then
     cmd = cmd .. input.char
   end
-  vim.cmd("normal! " .. cmd)
+  local keys = vim.api.nvim_replace_termcodes(cmd, true, false, true)
+  vim.api.nvim_feedkeys(keys, "nx", false)
 end
 
 return M

@@ -10,6 +10,8 @@ local performance_state = {
   event_listeners = {},
 }
 
+local autocmd_group = nil
+
 -- Check if performance mode should be auto-enabled
 function M.should_auto_enable()
   local perf_config = config.get_performance()
@@ -102,17 +104,22 @@ local perf_stats = {
 
 function M.record_frame_time()
   local current_time = vim.loop.hrtime()
-  
+
   if perf_stats.last_frame_time > 0 then
-    local frame_time = (current_time - perf_stats.last_frame_time) / 1000000 -- Convert to ms
+    local frame_time = (current_time - perf_stats.last_frame_time) / 1000000
+    local idle_threshold = M.get_frame_interval() * 5
+
+    if frame_time > idle_threshold then
+      perf_stats.last_frame_time = current_time
+      return
+    end
+
     table.insert(perf_stats.frame_times, frame_time)
-    
-    -- Keep only last 10 frame times
+
     if #perf_stats.frame_times > 10 then
       table.remove(perf_stats.frame_times, 1)
     end
-    
-    -- Calculate current FPS
+
     if #perf_stats.frame_times > 0 then
       local avg_frame_time = 0
       for _, time in ipairs(perf_stats.frame_times) do
@@ -122,7 +129,7 @@ function M.record_frame_time()
       perf_stats.current_fps = 1000 / avg_frame_time
     end
   end
-  
+
   perf_stats.last_frame_time = current_time
 end
 
@@ -133,17 +140,27 @@ end
 -- Initialize performance monitoring
 function M.setup()
   local perf_config = config.get_performance()
-  
+
   if perf_config.enabled then
     M.enable()
   end
-  
-  -- Set up auto-commands for performance monitoring
-  vim.api.nvim_create_autocmd({'BufEnter', 'BufWinEnter'}, {
+
+  autocmd_group = vim.api.nvim_create_augroup("WhiskPerformance", { clear = true })
+
+  vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
+    group = autocmd_group,
     callback = function()
       M.auto_toggle()
     end,
   })
+end
+
+function M.teardown()
+  M.disable()
+  if autocmd_group then
+    vim.api.nvim_del_augroup_by_id(autocmd_group)
+    autocmd_group = nil
+  end
 end
 
 return M

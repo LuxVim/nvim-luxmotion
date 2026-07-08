@@ -141,6 +141,25 @@ describe('performance', function()
     assert.greater_than(#state.autocmds, 0)
   end)
 
+  it('exports teardown', function()
+    assert.is_type(performance.teardown, 'function')
+  end)
+
+  it('setup registers its autocmd under the WhiskPerformance augroup', function()
+    performance.setup()
+    local state = mocks.get_api_state()
+    local last = state.autocmds[#state.autocmds]
+    assert.is_not_nil(last)
+    assert.equals(last.opts.group, 'WhiskPerformance')
+  end)
+
+  it('teardown disables performance mode', function()
+    performance.enable()
+    assert.is_true(performance.is_active())
+    performance.teardown()
+    assert.is_false(performance.is_active())
+  end)
+
   it('enable and disable are idempotent', function()
     performance.enable()
     performance.enable()
@@ -162,5 +181,20 @@ describe('performance', function()
       local fps = performance.get_current_fps()
       assert.is_type(fps, 'number')
     end
+  end)
+
+  it('skips frame samples when the idle gap exceeds 5x the frame interval', function()
+    local now = 0
+    _G.vim.loop = { hrtime = function() return now end }
+
+    for _ = 1, 12 do
+      now = now + 16 * 1000000
+      performance.record_frame_time()
+    end
+    assert.equals(performance.get_current_fps(), 62.5)
+
+    now = now + 300 * 1000000
+    performance.record_frame_time()
+    assert.equals(performance.get_current_fps(), 62.5)
   end)
 end)
